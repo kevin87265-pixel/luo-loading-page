@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>羅老師關心您</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&family=Noto+Sans+TC:wght@300;400;700&display=swap');
+
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-pale: #f5e5b0;
+  --deep: #07090f;
+  --navy: #0f1628;
+  --navy-mid: #162040;
+  --card: #1a2540;
+  --card2: #1e2d50;
+  --text: #e8dcc8;
+  --dim: #9b8e78;
+  --dimmer: #5a5244;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; background:var(--deep); overflow:hidden; font-family:'Noto Serif TC',serif; }
+
+/* ═══ STAR BG ═══ */
+#stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.star { position:absolute; border-radius:50%; background:#fff;
+  animation:twinkle var(--d) ease-in-out infinite var(--del); }
+@keyframes twinkle {
+  0%,100%{opacity:.08;transform:scale(1)}
+  50%{opacity:.85;transform:scale(1.4)}
+}
+
+/* radial ambient */
+.glow-bg {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 35%, rgba(201,168,76,.09) 0%, transparent 70%),
+    radial-gradient(ellipse 120% 60% at 50% 110%, rgba(10,14,26,.98) 0%, transparent 60%);
+}
+
+/* ═══ CORNER DECO ═══ */
+.corner { position:fixed; width:48px; height:48px; z-index:20; }
+.corner svg { width:100%; height:100%; }
+.c-tl{top:14px;left:14px}
+.c-tr{top:14px;right:14px;transform:scaleX(-1)}
+.c-bl{bottom:14px;left:14px;transform:scaleY(-1)}
+.c-br{bottom:14px;right:14px;transform:scale(-1)}
+
+/* ═══ SLIDE WRAPPER ═══ */
+#slides { position:relative; width:100%; height:100vh; z-index:10; }
+
+.slide {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:60px 24px 80px;
+  opacity:0; pointer-events:none;
+  transition:opacity .7s ease;
+}
+.slide.active { opacity:1; pointer-events:all; }
+
+/* ═══ HEADER CHIP ═══ */
+.chip {
+  font-family:'Noto Sans TC',sans-serif;
+  font-size:10px; letter-spacing:4px;
+  color:var(--gold); border:1px solid rgba(201,168,76,.35);
+  padding:4px 18px; border-radius:20px;
+  margin-bottom:18px;
+  background:rgba(201,168,76,.06);
+}
+
+/* ═══ LOGO RING ═══ */
+.logo-wrap { position:relative; margin-bottom:22px; flex-shrink:0; }
+.ring1,.ring2 {
+  position:absolute; border-radius:50%;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+.ring1 { width:138px; height:138px; border:1px solid rgba(201,168,76,.3);
+  animation:spin 22s linear infinite; }
+.ring1::before { content:''; position:absolute; top:-3px; left:50%;
+  transform:translateX(-50%); width:6px; height:6px;
+  background:var(--gold); border-radius:50%; }
+.ring2 { width:158px; height:158px; border:1px solid rgba(201,168,76,.12);
+  animation:spin 35s linear infinite reverse; }
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+.logo-inner {
+  width:108px; height:108px; border-radius:50%;
+  background:linear-gradient(145deg,var(--navy-mid),var(--card));
+  border:2px solid var(--gold);
+  box-shadow:0 0 28px rgba(201,168,76,.28), inset 0 0 18px rgba(201,168,76,.06);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; z-index:2;
+}
+.logo-char { font-size:44px; font-weight:900; color:var(--gold);
+  text-shadow:0 0 18px rgba(201,168,76,.7); line-height:1; }
+
+/* ═══ TITLES ═══ */
+.main-title {
+  font-size:clamp(26px,5.5vw,42px); font-weight:900;
+  color:var(--gold-light); letter-spacing:6px; text-align:center;
+  text-shadow:0 0 36px rgba(201,168,76,.38); margin-bottom:8px;
+}
+.sub-title {
+  font-size:clamp(12px,2.2vw,16px); color:var(--dim);
+  letter-spacing:3px; text-align:center; margin-bottom:22px;
+  font-family:'Noto Sans TC',sans-serif;
+}
+
+/* divider */
+.divider { display:flex; align-items:center; gap:14px;
+  width:min(300px,78vw); margin-bottom:22px; }
+.dl { flex:1; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-light),transparent); }
+.di { font-size:14px; color:var(--gold); }
+
+/* ═══ INFO CARDS (grid) ═══ */
+.info-grid {
+  display:grid; gap:10px;
+  width:min(680px,92vw);
+  margin-bottom:16px;
+}
+.info-grid.cols2 { grid-template-columns:repeat(2,1fr); }
+.info-grid.cols3 { grid-template-columns:repeat(3,1fr); }
+.info-grid.cols4 { grid-template-columns:repeat(4,1fr); }
+
+.icard {
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:10px; padding:16px 14px;
+  text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.35);
+  position:relative; overflow:hidden;
+}
+.icard::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.6;
+}
+.icard .icon { font-size:22px; margin-bottom:8px; display:block; }
+.icard .label {
+  font-size:13px; font-weight:700; color:var(--gold-light);
+  letter-spacing:2px; margin-bottom:4px;
+  font-family:'Noto Serif TC',serif;
+}
+.icard .desc {
+  font-size:10px; color:var(--dim); letter-spacing:1px; line-height:1.6;
+  font-family:'Noto Sans TC',sans-serif;
+}
+
+/* ═══ CONTACT CARD ═══ */
+.contact-card {
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border:1px solid rgba(201,168,76,.25);
+  border-radius:14px; padding:20px 28px;
+  width:min(480px,90vw); text-align:left;
+  box-shadow:0 6px 30px rgba(0,0,0,.4);
+  position:relative; overflow:hidden;
+  margin-bottom:16px;
+}
+.contact-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.contact-row {
+  display:flex; align-items:center; gap:12px;
+  padding:8px 0; border-bottom:1px solid rgba(201,168,76,.1);
+  font-family:'Noto Sans TC',sans-serif;
+}
+.contact-row:last-child { border-bottom:none; }
+.contact-row .ci { font-size:16px; width:24px; text-align:center; flex-shrink:0; }
+.contact-row .ct { font-size:12px; color:var(--text); letter-spacing:1px; }
+.contact-row .cv { font-size:12px; color:var(--gold-light); letter-spacing:1px; margin-left:auto; }
+
+/* ═══ COURSE LIST ═══ */
+.course-list { width:min(520px,90vw); margin-bottom:16px; }
+.citem {
+  display:flex; align-items:center; gap:14px;
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border:1px solid rgba(201,168,76,.18);
+  border-radius:10px; padding:13px 18px; margin-bottom:8px;
+  position:relative; overflow:hidden;
+}
+.citem::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:linear-gradient(180deg,var(--gold),var(--gold-light));
+}
+.citem .ci { font-size:20px; flex-shrink:0; }
+.citem .cn { font-size:14px; font-weight:700; color:var(--gold-light); letter-spacing:2px; }
+.citem .cd { font-size:10px; color:var(--dim); letter-spacing:1px; margin-top:2px;
+  font-family:'Noto Sans TC',sans-serif; }
+.citem .badge {
+  margin-left:auto; font-size:9px; letter-spacing:1px;
+  color:var(--gold); border:1px solid rgba(201,168,76,.4);
+  padding:2px 8px; border-radius:10px; white-space:nowrap;
+  font-family:'Noto Sans TC',sans-serif;
+}
+
+/* ═══ PORTRAIT STRIP ═══ */
+.portrait-strip {
+  display:flex; align-items:center; gap:18px;
+  background:linear-gradient(135deg,var(--card),var(--card2));
+  border:1px solid rgba(201,168,76,.22);
+  border-radius:14px; padding:18px 24px;
+  width:min(480px,90vw); margin-bottom:16px;
+  position:relative; overflow:hidden;
+}
+.portrait-strip::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.portrait-circle {
+  width:72px; height:72px; border-radius:50%;
+  border:2px solid var(--gold);
+  background:var(--navy-mid);
+  box-shadow:0 0 18px rgba(201,168,76,.25);
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; flex-shrink:0;
+}
+.portrait-info .pname { font-size:18px; font-weight:900; color:var(--gold-light); letter-spacing:3px; }
+.portrait-info .ptitle { font-size:11px; color:var(--dim); letter-spacing:2px; margin-top:4px;
+  font-family:'Noto Sans TC',sans-serif; }
+.portrait-info .ptag {
+  display:inline-block; margin-top:6px; font-size:9px; letter-spacing:1px;
+  color:var(--gold); border:1px solid rgba(201,168,76,.35);
+  padding:2px 10px; border-radius:10px;
+  font-family:'Noto Sans TC',sans-serif;
+}
+
+
+
+/* ═══ PAGE DOTS ═══ */
+#dots {
+  position:fixed; bottom:38px; left:50%; transform:translateX(-50%);
+  display:flex; gap:8px; z-index:30;
+}
+.dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--dimmer); cursor:pointer;
+  transition:all .3s ease;
+}
+.dot.active { background:var(--gold); transform:scale(1.4);
+  box-shadow:0 0 8px rgba(201,168,76,.6); }
+
+/* ═══ FOOTER ═══ */
+#footer {
+  position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+  font-size:9px; letter-spacing:3px; color:rgba(155,142,120,.4);
+  font-family:'Noto Sans TC',sans-serif; white-space:nowrap; z-index:30;
+}
+
+/* ═══ NAV ARROWS ═══ */
+.nav-arrow {
+  position:fixed; top:50%; z-index:30; transform:translateY(-50%);
+  width:36px; height:36px; border-radius:50%;
+  border:1px solid rgba(201,168,76,.3);
+  background:rgba(10,14,26,.7);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--gold); font-size:14px;
+  transition:all .2s; backdrop-filter:blur(4px);
+}
+.nav-arrow:hover { border-color:var(--gold); background:rgba(201,168,76,.12); }
+#nav-prev { left:14px; }
+#nav-next { right:14px; }
+
+/* ═══ PARTICLES ═══ */
+.particle {
+  position:fixed; width:3px; height:3px; border-radius:50%;
+  background:var(--gold); opacity:0; pointer-events:none; z-index:1;
+  animation:floatUp var(--dur) ease-in-out var(--del) infinite;
+}
+@keyframes floatUp {
+  0%{opacity:0;transform:translateY(0) scale(0)}
+  20%{opacity:.5;transform:translateY(-40px) scale(1)}
+  80%{opacity:.2;transform:translateY(-130px) scale(.6)}
+  100%{opacity:0;transform:translateY(-180px) scale(0)}
+}
+
+/* ═══ ENTRY ANIMATION ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
+.slide.active .chip        { animation:fadeUp .6s ease .1s both }
+.slide.active .logo-wrap   { animation:scaleIn .8s ease .2s both }
+.slide.active .main-title  { animation:fadeUp .7s ease .35s both }
+.slide.active .sub-title   { animation:fadeUp .7s ease .5s both }
+.slide.active .divider     { animation:fadeUp .6s ease .6s both }
+.slide.active .info-grid   { animation:fadeUp .7s ease .7s both }
+.slide.active .contact-card{ animation:fadeUp .7s ease .7s both }
+.slide.active .course-list { animation:fadeUp .7s ease .7s both }
+.slide.active .portrait-strip{animation:fadeUp .7s ease .65s both }
+
+/* responsive */
+@media(max-width:500px){
+  .info-grid.cols4{grid-template-columns:repeat(2,1fr)}
+  .info-grid.cols3{grid-template-columns:repeat(2,1fr)}
+  .icard .icon{font-size:18px}
+  .icard .label{font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div class="glow-bg"></div>
+
+<!-- Corners -->
+<div class="corner c-tl"><svg viewBox="0 0 48 48" fill="none"><path d="M2 46L2 2L46 2" stroke="#c9a84c" stroke-width="1.5" opacity=".5"/><path d="M2 18L2 2L18 2" stroke="#c9a84c" stroke-width="2"/></svg></div>
+<div class="corner c-tr"><svg viewBox="0 0 48 48" fill="none"><path d="M2 46L2 2L46 2" stroke="#c9a84c" stroke-width="1.5" opacity=".5"/><path d="M2 18L2 2L18 2" stroke="#c9a84c" stroke-width="2"/></svg></div>
+<div class="corner c-bl"><svg viewBox="0 0 48 48" fill="none"><path d="M2 46L2 2L46 2" stroke="#c9a84c" stroke-width="1.5" opacity=".5"/><path d="M2 18L2 2L18 2" stroke="#c9a84c" stroke-width="2"/></svg></div>
+<div class="corner c-br"><svg viewBox="0 0 48 48" fill="none"><path d="M2 46L2 2L46 2" stroke="#c9a84c" stroke-width="1.5" opacity=".5"/><path d="M2 18L2 2L18 2" stroke="#c9a84c" stroke-width="2"/></svg></div>
+
+<div id="slides">
+
+  <!-- ═══ SLIDE 1：歡迎首頁 ═══ -->
+  <div class="slide active" id="s0">
+    <div class="chip">羅老師關心您</div>
+    <div class="logo-wrap">
+      <div class="ring2"></div>
+      <div class="ring1"></div>
+      <div class="logo-inner"><span class="logo-char">羅</span></div>
+    </div>
+    <h1 class="main-title">羅老師關心您</h1>
+    <div class="sub-title">神奇身心靈學苑 &nbsp;✦&nbsp; 命理諮詢 &nbsp;✦&nbsp; 身心療癒</div>
+    <div class="divider"><div class="dl"></div><div class="di">☯</div><div class="dl"></div></div>
+    <div class="info-grid cols4">
+      <div class="icard"><span class="icon">🔮</span><div class="label">命理諮詢</div><div class="desc">八字 · 紫微<br>流年運勢</div></div>
+      <div class="icard"><span class="icon">🪬</span><div class="label">祈福法會</div><div class="desc">消災解厄<br>開運招財</div></div>
+      <div class="icard"><span class="icon">📖</span><div class="label">命理教學</div><div class="desc">系統課程<br>專業培訓</div></div>
+      <div class="icard"><span class="icon">🃏</span><div class="label">塔羅占卜</div><div class="desc">感情 · 事業<br>未來指引</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2：苑長介紹 ═══ -->
+  <div class="slide" id="s1">
+    <div class="chip">苑長介紹</div>
+    <div class="logo-wrap">
+      <div class="ring2"></div>
+      <div class="ring1"></div>
+      <div class="logo-inner"><span class="logo-char" style="font-size:38px">苑長</span></div>
+    </div>
+    <h1 class="main-title" style="font-size:clamp(22px,4.5vw,36px)">羅文勳 苑長</h1>
+    <div class="sub-title">神奇身心靈學苑 創辦人 ／ 教學總監</div>
+    <div class="divider"><div class="dl"></div><div class="di">✦</div><div class="dl"></div></div>
+    <div class="info-grid cols3">
+      <div class="icard"><span class="icon">🎓</span><div class="label">專業資歷</div><div class="desc">命理師執照<br>多年實務經驗</div></div>
+      <div class="icard"><span class="icon">👥</span><div class="label">學員人數</div><div class="desc">累積學員<br>逾 200 位</div></div>
+      <div class="icard"><span class="icon">🏆</span><div class="label">教學領域</div><div class="desc">八字 · 塔羅<br>數字易經</div></div>
+    </div>
+    <div class="info-grid cols2" style="margin-top:0">
+      <div class="icard"><span class="icon">💬</span><div class="label">命理諮詢</div><div class="desc">一對一深度<br>面命解析</div></div>
+      <div class="icard"><span class="icon">🙏</span><div class="label">法事作法</div><div class="desc">祈福消災<br>能量淨化</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3：服務項目 ═══ -->
+  <div class="slide" id="s2">
+    <div class="chip">服務項目</div>
+    <h1 class="main-title" style="font-size:clamp(22px,4.5vw,36px);margin-bottom:6px">全方位命理服務</h1>
+    <div class="sub-title">為您量身打造 · 每一次諮詢都是緣份</div>
+    <div class="divider"><div class="dl"></div><div class="di">☽</div><div class="dl"></div></div>
+    <div class="course-list">
+      <div class="citem">
+        <span class="ci">🔮</span>
+        <div><div class="cn">八字命理諮詢</div><div class="cd">分析命局、流年、十年大運，解答人生疑惑</div></div>
+        <div class="badge">熱門</div>
+      </div>
+      <div class="citem">
+        <span class="ci">🃏</span>
+        <div><div class="cn">塔羅牌占卜</div><div class="cd">感情、事業、財運、健康全面指引</div></div>
+        <div class="badge">推薦</div>
+      </div>
+      <div class="citem">
+        <span class="ci">🪬</span>
+        <div><div class="cn">祈福法會 ／ 作法</div><div class="cd">消災解厄、旺運招財、感情和合法事</div></div>
+        <div class="badge">預約制</div>
+      </div>
+      <div class="citem">
+        <span class="ci">🔢</span>
+        <div><div class="cn">數字易經識人術</div><div class="cd">透過數字解析個性與命運走向</div></div>
+        <div class="badge">特色</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4：課程介紹 ═══ -->
+  <div class="slide" id="s3">
+    <div class="chip">命理教學課程</div>
+    <h1 class="main-title" style="font-size:clamp(22px,4.5vw,36px);margin-bottom:6px">學習命理 · 掌握人生</h1>
+    <div class="sub-title">系統化教學 ／ 考照輔導 ／ 實務演練</div>
+    <div class="divider"><div class="dl"></div><div class="di">📚</div><div class="dl"></div></div>
+    <div class="course-list">
+      <div class="citem">
+        <span class="ci">☯</span>
+        <div><div class="cn">八字課程</div><div class="cd">從入門到精通，完整命理學習體系</div></div>
+        <div class="badge">招生中</div>
+      </div>
+      <div class="citem">
+        <span class="ci">🃏</span>
+        <div><div class="cn">塔羅課程</div><div class="cd">78 張牌義深度解析、實戰占卜技巧</div></div>
+        <div class="badge">招生中</div>
+      </div>
+      <div class="citem">
+        <span class="ci">🔢</span>
+        <div><div class="cn">數字易經 ／ 命卦識人術</div><div class="cd">獨特數字命理解讀系統</div></div>
+        <div class="badge">特色課</div>
+      </div>
+    </div>
+    <div class="info-grid cols3" style="width:min(520px,90vw)">
+      <div class="icard"><span class="icon">📜</span><div class="label">專業考照</div><div class="desc">輔導取得<br>命理師執照</div></div>
+      <div class="icard"><span class="icon">🗓</span><div class="label">課程時間表</div><div class="desc">彈性排課<br>配合學員</div></div>
+      <div class="icard"><span class="icon">💳</span><div class="label">線上購課</div><div class="desc">購物車<br>輕鬆報名</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5：聯絡我們 ═══ -->
+  <div class="slide" id="s4">
+    <div class="chip">聯絡我們</div>
+    <div class="logo-wrap" style="margin-bottom:18px">
+      <div class="ring2"></div>
+      <div class="ring1"></div>
+      <div class="logo-inner"><span class="logo-char" style="font-size:32px">聯絡</span></div>
+    </div>
+    <h1 class="main-title" style="font-size:clamp(20px,4vw,32px);margin-bottom:6px">預約諮詢 · 立即聯繫</h1>
+    <div class="sub-title">羅老師親自接待 · 歡迎來訪</div>
+    <div class="divider"><div class="dl"></div><div class="di">📞</div><div class="dl"></div></div>
+    <div class="contact-card">
+      <div class="contact-row">
+        <span class="ci">📍</span><span class="ct">地址</span>
+        <span class="cv">台中市市政路 386 號 11 樓之 8</span>
+      </div>
+      <div class="contact-row">
+        <span class="ci">📞</span><span class="ct">電話</span>
+        <span class="cv">04-2254-4917</span>
+      </div>
+      <div class="contact-row">
+        <span class="ci">📱</span><span class="ct">手機</span>
+        <span class="cv">0900-000-000</span>
+      </div>
+      <div class="contact-row">
+        <span class="ci">💬</span><span class="ct">LINE</span>
+        <span class="cv">@799iqupz</span>
+      </div>
+      <div class="contact-row">
+        <span class="ci">✉️</span><span class="ct">Email</span>
+        <span class="cv" style="font-size:10px">mirragic8699@gmail.com</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slides -->
+
+<!-- Nav arrows -->
+<div class="nav-arrow" id="nav-prev">‹</div>
+<div class="nav-arrow" id="nav-next">›</div>
+
+<!-- Dots -->
+<div id="dots">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+</div>
+
+<!-- Footer -->
+<div id="footer">由 辰蒝企業社 運營</div>
+
+<script>
+// ── Stars ──
+const starsEl = document.getElementById('stars');
+for(let i=0;i<130;i++){
+  const s=document.createElement('div'); s.className='star';
+  const sz=Math.random()*2+.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--del:-${(Math.random()*6).toFixed(1)}s`;
+  starsEl.appendChild(s);
+}
+
+// ── Particles ──
+for(let i=0;i<10;i++){
+  const p=document.createElement('div'); p.className='particle';
+  p.style.cssText=`left:${10+i*8+Math.random()*4}%;bottom:${5+Math.random()*15}%;--dur:${(5+Math.random()*4).toFixed(1)}s;--del:${(Math.random()*4).toFixed(1)}s`;
+  document.body.appendChild(p);
+}
+
+// ── Slides ──
+const TOTAL=5;
+let current=0;
+
+const dots=[...document.querySelectorAll('.dot')];
+const slides=[...document.querySelectorAll('.slide')];
+
+function goTo(n){
+  if(n<0) n=TOTAL-1;
+  if(n>=TOTAL) n=0;
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+  current=n;
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+}
+
+document.getElementById('nav-prev').onclick=()=>goTo(current-1);
+document.getElementById('nav-next').onclick=()=>goTo(current+1);
+
+// Touch / swipe
+let tx=null;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX});
+document.addEventListener('touchend',e=>{
+  if(tx===null)return;
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50) goTo(dx<0?current+1:current-1);
+  tx=null;
+});
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') goTo(current-1);
+});
+</script>
+</body>
+</html>
